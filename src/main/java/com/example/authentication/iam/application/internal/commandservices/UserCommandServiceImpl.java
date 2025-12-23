@@ -9,9 +9,11 @@ import com.example.authentication.iam.domain.services.UserCommandService;
 import com.example.authentication.iam.infrastructure.persistence.jpa.repositories.RoleRepository;
 import com.example.authentication.iam.infrastructure.persistence.jpa.repositories.UserRepository;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public class UserCommandServiceImpl implements UserCommandService {
 
   private final UserRepository userRepository;
