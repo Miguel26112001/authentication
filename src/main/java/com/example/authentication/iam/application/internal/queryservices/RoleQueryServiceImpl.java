@@ -26,8 +26,15 @@ public class RoleQueryServiceImpl implements RoleQueryService {
 
   @Override
   public Optional<Role> handle(GetRoleByNameQuery query) {
-    var roles = Roles.valueOf(query.roles());
-
-    return roleRepository.findByRoles(roles);
+    try {
+      var roleName = query.roles().toUpperCase();
+      if (!roleName.startsWith("ROLE_")) {
+        roleName = "ROLE_" + roleName;
+      }
+      var roles = Roles.valueOf(roleName);
+      return roleRepository.findByRoles(roles);
+    } catch (IllegalArgumentException e) {
+      return Optional.empty();
+    }
   }
 }
