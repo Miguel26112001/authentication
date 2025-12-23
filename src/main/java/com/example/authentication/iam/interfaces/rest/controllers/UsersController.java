@@ -5,6 +5,10 @@ import com.example.authentication.iam.domain.model.queries.GetUserByIdQuery;
 import com.example.authentication.iam.domain.services.UserQueryService;
 import com.example.authentication.iam.interfaces.rest.resources.UserResource;
 import com.example.authentication.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
+import com.example.authentication.shared.interfaces.rest.resources.MessageResource;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,11 +40,16 @@ public class UsersController {
   }
 
   @GetMapping(value = "/{userId}")
-  public ResponseEntity<UserResource> getUserById(@PathVariable Long userId) {
+  @Operation(summary = "Get user by ID", description = "Get user by ID")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "User found"),
+      @ApiResponse(responseCode = "404", description = "User not found")
+  })
+  public ResponseEntity<?> getUserById(@PathVariable Long userId) {
     var getUserByIdQuery = new GetUserByIdQuery(userId);
     var user = userQueryService.handle(getUserByIdQuery);
     if (user.isEmpty()) {
-      return ResponseEntity.notFound().build();
+      return ResponseEntity.status(404).body(new MessageResource("User not found with ID: " + userId));
     }
     var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(user.get());
     return ResponseEntity.ok(userResource);
