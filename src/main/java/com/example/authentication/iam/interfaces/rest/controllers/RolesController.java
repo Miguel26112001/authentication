@@ -35,11 +35,7 @@ public class RolesController {
     return ResponseEntity.ok(roleResources);
   }
 
-  /**
-   * Get role by name
-   * @param name The role name
-   * @return The role resource
-   */
+
   @GetMapping(params = "name")
   public ResponseEntity<RoleResource> getRoleByName(@RequestParam("name") String name) {
     var getRoleByNameQuery = new GetRoleByNameQuery(name);
