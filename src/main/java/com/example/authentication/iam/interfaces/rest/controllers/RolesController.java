@@ -1,6 +1,7 @@
 package com.example.authentication.iam.interfaces.rest.controllers;
 
 import com.example.authentication.iam.domain.model.queries.GetAllRolesQuery;
+import com.example.authentication.iam.domain.model.queries.GetRoleByNameQuery;
 import com.example.authentication.iam.domain.services.RoleQueryService;
 import com.example.authentication.iam.interfaces.rest.resources.RoleResource;
 import com.example.authentication.iam.interfaces.rest.transform.RoleResourceFromEntityAssembler;
@@ -9,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -31,5 +33,24 @@ public class RolesController {
         .map(RoleResourceFromEntityAssembler::toResourceFromEntity)
         .toList();
     return ResponseEntity.ok(roleResources);
+  }
+
+  /**
+   * Get role by name
+   * @param name The role name
+   * @return The role resource
+   */
+  @GetMapping(params = "name")
+  public ResponseEntity<RoleResource> getRoleByName(@RequestParam("name") String name) {
+    var getRoleByNameQuery = new GetRoleByNameQuery(name);
+
+    var role = roleQueryService.handle(getRoleByNameQuery);
+
+    if (role.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
+    var roleResource = RoleResourceFromEntityAssembler.toResourceFromEntity(role.get());
+
+    return ResponseEntity.ok(roleResource);
   }
 }

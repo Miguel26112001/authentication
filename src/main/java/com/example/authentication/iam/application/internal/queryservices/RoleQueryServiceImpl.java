@@ -3,6 +3,7 @@ package com.example.authentication.iam.application.internal.queryservices;
 import com.example.authentication.iam.domain.model.entities.Role;
 import com.example.authentication.iam.domain.model.queries.GetAllRolesQuery;
 import com.example.authentication.iam.domain.model.queries.GetRoleByNameQuery;
+import com.example.authentication.iam.domain.model.valueobjects.Roles;
 import com.example.authentication.iam.domain.services.RoleQueryService;
 import com.example.authentication.iam.infrastructure.persistence.jpa.repositories.RoleRepository;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,8 @@ public class RoleQueryServiceImpl implements RoleQueryService {
 
   @Override
   public Optional<Role> handle(GetRoleByNameQuery query) {
-    return roleRepository.findByRoles(query.roles());
+    var roles = Roles.valueOf(query.roles());
+
+    return roleRepository.findByRoles(roles);
   }
 }
