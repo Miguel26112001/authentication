@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/api/v1/authentication", produces = MediaType.APPLICATION_JSON_VALUE)
-@Tag(name = "Authentication", description = "Authentication Endpoints")
+@Tag(name = "Authentication", description = "Authentication endpoints for user and token management")
 public class AuthenticationController {
   private final UserCommandService userCommandService;
 
@@ -35,9 +35,9 @@ public class AuthenticationController {
   }
 
   @PostMapping("/sign-in")
-  @Operation(summary = "Sign in", description = "Sign in")
+  @Operation(summary = "Log in into the application", description = "Allows a user to authenticate in the system by providing their credentials (username and password). If the credentials are valid, an access token is returned.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "User authenticated",
+      @ApiResponse(responseCode = "200", description = "User authenticated successfully",
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = AuthenticatedUserResource.class))),
       @ApiResponse(responseCode = "400", description = "Invalid password",
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResource.class))),
@@ -57,11 +57,11 @@ public class AuthenticationController {
   }
 
   @PostMapping("/sign-up")
-  @Operation(summary = "Sign up", description = "Sign up a new user")
+  @Operation(summary = "Register a new user", description = "Allows registering a new user in the system with a specific username, password, and roles.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "201", description = "User created",
+      @ApiResponse(responseCode = "201", description = "User created successfully",
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResource.class))),
-      @ApiResponse(responseCode = "400", description = "Bad request",
+      @ApiResponse(responseCode = "400", description = "Bad request (data may be missing or invalid)",
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResource.class))),
       @ApiResponse(responseCode = "404", description = "Role not found",
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResource.class))),
