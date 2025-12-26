@@ -54,7 +54,9 @@ public class AuthenticationController {
   @Operation(summary = "Sign up", description = "Sign up a new user")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "User created"),
-      @ApiResponse(responseCode = "400", description = "Bad request")
+      @ApiResponse(responseCode = "400", description = "Bad request"),
+      @ApiResponse(responseCode = "404", description = "Role not found"),
+      @ApiResponse(responseCode = "409", description = "Username already exists")
   })
   public ResponseEntity<UserResource> signUp(@RequestBody SignUpResource signUpResource) {
     var signUpCommand = SignUpCommandFromResourceAssembler
