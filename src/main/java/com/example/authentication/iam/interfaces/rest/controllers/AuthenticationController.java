@@ -39,7 +39,9 @@ public class AuthenticationController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "User authenticated",
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = AuthenticatedUserResource.class))),
-      @ApiResponse(responseCode = "400", description = "Bad request (User not found or Invalid password)",
+      @ApiResponse(responseCode = "400", description = "Invalid password",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResource.class))),
+      @ApiResponse(responseCode = "404", description = "User not found",
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResource.class)))
   })
   public ResponseEntity<?> signIn(
