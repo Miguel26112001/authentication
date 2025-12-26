@@ -1,0 +1,26 @@
+package com.example.authentication.iam.interfaces.rest.exceptions;
+
+import com.example.authentication.iam.domain.exceptions.RoleNotFoundException;
+import com.example.authentication.iam.domain.exceptions.UsernameAlreadyExistsException;
+import com.example.authentication.shared.interfaces.rest.resources.MessageResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+@RestControllerAdvice
+public class DomainExceptionHandler {
+    @ExceptionHandler(RoleNotFoundException.class)
+    public ResponseEntity<MessageResource> handleRoleNotFound(RoleNotFoundException e) {
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(new MessageResource(e.getMessage()));
+    }
+
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<MessageResource> handleUsernameAlreadyExistsException(UsernameAlreadyExistsException e) {
+        return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+            .body(new MessageResource(e.getMessage()));
+    }
+}

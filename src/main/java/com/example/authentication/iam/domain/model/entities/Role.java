@@ -1,5 +1,6 @@
 package com.example.authentication.iam.domain.model.entities;
 
+import com.example.authentication.iam.domain.exceptions.RoleNotFoundException;
 import com.example.authentication.iam.domain.model.valueobjects.Roles;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,7 +37,11 @@ public class Role {
   }
 
   public static Role toRoleFromName(String roleName) {
-    return new Role(Roles.valueOf(roleName));
+    try {
+      return new Role(Roles.valueOf(roleName));
+    } catch (IllegalArgumentException e) {
+      throw new RoleNotFoundException(roleName);
+    }
   }
 
   public static List<Role> validateRoleSet(List<Role> roles) {
