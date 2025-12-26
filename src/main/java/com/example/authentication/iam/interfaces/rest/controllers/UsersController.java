@@ -7,6 +7,8 @@ import com.example.authentication.iam.interfaces.rest.resources.UserResource;
 import com.example.authentication.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
 import com.example.authentication.shared.interfaces.rest.resources.MessageResource;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +32,13 @@ public class UsersController {
   }
 
   @GetMapping
+  @Operation(summary = "Get all users", description = "Get all users registered in the system.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Users found",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResource.class))),
+      @ApiResponse(responseCode = "401", description = "Unauthorized",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResource.class)))
+  })
   public ResponseEntity<List<UserResource>> getAllUsers() {
     var getAllUsersQuery = new GetAllUsersQuery();
     var users = userQueryService.handle(getAllUsersQuery);
@@ -40,10 +49,14 @@ public class UsersController {
   }
 
   @GetMapping(value = "/{userId}")
-  @Operation(summary = "Get user by ID", description = "Get user by ID")
+  @Operation(summary = "Get user by ID", description = "Get a specific user filtered by its id.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "User found"),
-      @ApiResponse(responseCode = "404", description = "User not found")
+      @ApiResponse(responseCode = "200", description = "User found",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResource.class))),
+      @ApiResponse(responseCode = "401", description = "Unauthorized",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResource.class))),
+      @ApiResponse(responseCode = "404", description = "User not found",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResource.class)))
   })
   public ResponseEntity<?> getUserById(@PathVariable Long userId) {
     var getUserByIdQuery = new GetUserByIdQuery(userId);
