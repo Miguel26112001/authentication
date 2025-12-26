@@ -11,6 +11,8 @@ import com.example.authentication.iam.interfaces.rest.transform.SignUpCommandFro
 import com.example.authentication.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
 import com.example.authentication.shared.interfaces.rest.resources.MessageResource;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,8 +37,10 @@ public class AuthenticationController {
   @PostMapping("/sign-in")
   @Operation(summary = "Sign in", description = "Sign in")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "User authenticated"),
-      @ApiResponse(responseCode = "400", description = "Bad request (User not found or Invalid password)")
+      @ApiResponse(responseCode = "200", description = "User authenticated",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = AuthenticatedUserResource.class))),
+      @ApiResponse(responseCode = "400", description = "Bad request (User not found or Invalid password)",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResource.class)))
   })
   public ResponseEntity<?> signIn(
       @RequestBody SignInResource signInResource) {
@@ -53,10 +57,14 @@ public class AuthenticationController {
   @PostMapping("/sign-up")
   @Operation(summary = "Sign up", description = "Sign up a new user")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "201", description = "User created"),
-      @ApiResponse(responseCode = "400", description = "Bad request"),
-      @ApiResponse(responseCode = "404", description = "Role not found"),
-      @ApiResponse(responseCode = "409", description = "Username already exists")
+      @ApiResponse(responseCode = "201", description = "User created",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResource.class))),
+      @ApiResponse(responseCode = "400", description = "Bad request",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResource.class))),
+      @ApiResponse(responseCode = "404", description = "Role not found",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResource.class))),
+      @ApiResponse(responseCode = "409", description = "Username already exists",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResource.class)))
   })
   public ResponseEntity<UserResource> signUp(@RequestBody SignUpResource signUpResource) {
     var signUpCommand = SignUpCommandFromResourceAssembler
