@@ -42,9 +42,13 @@ public class BearerAuthorizationRequestFilter extends OncePerRequestFilter {
       if (token != null && tokenService.validateToken(token)) {
         String username = tokenService.getUsernameFromToken(token);
         var userDetails = userDetailsService.loadUserByUsername(username);
-        SecurityContextHolder.getContext()
-            .setAuthentication(
-                UsernamePasswordAuthenticationTokenBuilder.build(userDetails, request));
+        if (userDetails.isEnabled()) {
+          SecurityContextHolder.getContext()
+              .setAuthentication(
+                  UsernamePasswordAuthenticationTokenBuilder.build(userDetails, request));
+        } else {
+          LOGGER.info("User is disabled");
+        }
       } else {
         LOGGER.info("Token is not valid");
       }
