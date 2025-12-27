@@ -1,7 +1,9 @@
 package com.example.authentication.iam.interfaces.rest.controllers;
 
+import com.example.authentication.iam.domain.model.commands.UpdateUserStatusCommand;
 import com.example.authentication.iam.domain.model.queries.GetAllUsersQuery;
 import com.example.authentication.iam.domain.model.queries.GetUserByIdQuery;
+import com.example.authentication.iam.domain.services.UserCommandService;
 import com.example.authentication.iam.domain.services.UserQueryService;
 import com.example.authentication.iam.interfaces.rest.resources.UserResource;
 import com.example.authentication.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
@@ -15,10 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,9 +26,11 @@ import java.util.List;
 @Tag(name = "Users", description = "User Management Endpoints")
 public class UsersController {
   private final UserQueryService userQueryService;
+  private final UserCommandService userCommandService;
 
-  public UsersController(UserQueryService userQueryService) {
+  public UsersController(UserQueryService userQueryService, UserCommandService userCommandService) {
     this.userQueryService = userQueryService;
+    this.userCommandService = userCommandService;
   }
 
   @GetMapping
@@ -68,6 +69,27 @@ public class UsersController {
       return ResponseEntity.status(404).body(new MessageResource("User not found with ID: " + userId));
     }
     var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(user.get());
+    return ResponseEntity.ok(userResource);
+  }
+
+  @PatchMapping(value = "/{userId}/status")
+  @PreAuthorize("hasRole('ADMIN')")
+  @Operation(summary = "Update user status", description = "Update the status of a specific user.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "User status updated",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResource.class))),
+      @ApiResponse(responseCode = "401", description = "Unauthorized",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResource.class))),
+      @ApiResponse(responseCode = "404", description = "User not found",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResource.class)))
+  })
+  public ResponseEntity<UserResource> updateUserStatus(@PathVariable Long userId, @RequestParam boolean isActive) {
+    var updateUserStatusCommand = new UpdateUserStatusCommand(userId, isActive);
+    var updatedUser = userCommandService.handle(updateUserStatusCommand);
+    if (updatedUser.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
+    var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(updatedUser.get());
     return ResponseEntity.ok(userResource);
   }
 }

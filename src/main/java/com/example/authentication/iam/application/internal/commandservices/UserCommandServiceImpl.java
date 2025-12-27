@@ -6,6 +6,7 @@ import com.example.authentication.iam.domain.exceptions.*;
 import com.example.authentication.iam.domain.model.aggregates.User;
 import com.example.authentication.iam.domain.model.commands.SignInCommand;
 import com.example.authentication.iam.domain.model.commands.SignUpCommand;
+import com.example.authentication.iam.domain.model.commands.UpdateUserStatusCommand;
 import com.example.authentication.iam.domain.services.UserCommandService;
 import com.example.authentication.iam.infrastructure.persistence.jpa.repositories.RoleRepository;
 import com.example.authentication.iam.infrastructure.persistence.jpa.repositories.UserRepository;
@@ -65,5 +66,14 @@ public class UserCommandServiceImpl implements UserCommandService {
     userRepository.save(user);
 
     return userRepository.findByUsername(command.username());
+  }
+
+  @Override
+  public Optional<User> handle(UpdateUserStatusCommand command) {
+    var user = userRepository.findById(command.userId())
+        .orElseThrow(() -> new UserNotFoundException(command.userId().toString()));
+    user.setActive(command.isActive());
+    userRepository.save(user);
+    return Optional.of(user);
   }
 }
