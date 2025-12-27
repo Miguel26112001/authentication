@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +33,7 @@ public class UsersController {
   }
 
   @GetMapping
+  @PreAuthorize("hasRole('ADMIN')")
   @Operation(summary = "Get all users", description = "Get all users registered in the system.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Users found",
@@ -49,6 +51,7 @@ public class UsersController {
   }
 
   @GetMapping(value = "/{userId}")
+  @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
   @Operation(summary = "Get user by ID", description = "Get a specific user filtered by its id.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "User found",
