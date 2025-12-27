@@ -43,4 +43,11 @@ public class DomainExceptionHandler {
             .status(HttpStatus.FORBIDDEN)
             .body(new MessageResource(e.getMessage()));
     }
+
+    @ExceptionHandler(WeakPasswordException.class)
+    public ResponseEntity<MessageResource> handleWeakPasswordException(WeakPasswordException e) {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(new MessageResource(e.getMessage()));
+    }
 }

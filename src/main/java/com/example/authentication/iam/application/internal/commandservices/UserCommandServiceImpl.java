@@ -1,6 +1,7 @@
 package com.example.authentication.iam.application.internal.commandservices;
 
 import com.example.authentication.iam.application.internal.outboundservices.hashing.HashingService;
+import com.example.authentication.iam.application.internal.outboundservices.hashing.PasswordValidator;
 import com.example.authentication.iam.application.internal.outboundservices.tokens.TokenService;
 import com.example.authentication.iam.domain.exceptions.*;
 import com.example.authentication.iam.domain.model.aggregates.User;
@@ -56,6 +57,8 @@ public class UserCommandServiceImpl implements UserCommandService {
     if (userRepository.existsByUsername(command.username())) {
       throw new UsernameAlreadyExistsException(command.username());
     }
+
+    PasswordValidator.validate(command.password());
 
     var roles = command.roles().stream().map(role ->
       roleRepository.findByRoles(role.getRoles())
