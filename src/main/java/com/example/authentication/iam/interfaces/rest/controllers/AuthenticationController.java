@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -68,7 +69,7 @@ public class AuthenticationController {
       @ApiResponse(responseCode = "409", description = "Username already exists",
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResource.class)))
   })
-  public ResponseEntity<UserResource> signUp(@RequestBody SignUpResource signUpResource) {
+  public ResponseEntity<UserResource> signUp(@Valid @RequestBody SignUpResource signUpResource) {
     var signUpCommand = SignUpCommandFromResourceAssembler
         .toCommandFromResource(signUpResource);
     var user = userCommandService.handle(signUpCommand);

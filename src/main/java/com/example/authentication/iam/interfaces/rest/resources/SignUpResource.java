@@ -1,9 +1,10 @@
 package com.example.authentication.iam.interfaces.rest.resources;
 
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
 public record SignUpResource(
-    String username,
-    String password,
+    @NotBlank String username,
+    @NotBlank String password,
     List<String> roles) {
 }
