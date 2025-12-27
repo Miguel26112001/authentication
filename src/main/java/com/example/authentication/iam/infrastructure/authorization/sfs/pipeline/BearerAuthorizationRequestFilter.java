@@ -47,7 +47,8 @@ public class BearerAuthorizationRequestFilter extends OncePerRequestFilter {
               .setAuthentication(
                   UsernamePasswordAuthenticationTokenBuilder.build(userDetails, request));
         } else {
-          LOGGER.info("User is disabled");
+          LOGGER.warn("User {} is disabled, but tried to use a valid token", username);
+          SecurityContextHolder.clearContext();
         }
       } else {
         LOGGER.info("Token is not valid");
