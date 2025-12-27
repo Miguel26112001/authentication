@@ -54,7 +54,7 @@ public class UsersController {
   }
 
   @GetMapping(value = "/{userId}")
-  @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+  @PreAuthorize("hasRole('ADMIN') or (hasRole('USER'))")
   @Operation(summary = "Get user by ID", description = "Get a specific user filtered by its id.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "User found",
@@ -75,7 +75,7 @@ public class UsersController {
   }
 
   @PatchMapping(value = "/{userId}/status")
-  @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasRole('ADMIN') or (hasRole('USER') and #userId == principal.id)")
   @Operation(summary = "Update user status", description = "Update the status of a specific user.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "User status updated",
@@ -96,7 +96,7 @@ public class UsersController {
   }
 
   @PatchMapping(value = "/{userId}/password")
-  @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+  @PreAuthorize("hasRole('ADMIN') or (hasRole('USER') and #userId == principal.id)")
   @Operation(summary = "Update user password", description = "Update the password of a specific user.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "User password updated",
