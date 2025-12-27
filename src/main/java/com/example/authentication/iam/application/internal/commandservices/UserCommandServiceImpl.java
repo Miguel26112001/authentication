@@ -2,10 +2,7 @@ package com.example.authentication.iam.application.internal.commandservices;
 
 import com.example.authentication.iam.application.internal.outboundservices.hashing.HashingService;
 import com.example.authentication.iam.application.internal.outboundservices.tokens.TokenService;
-import com.example.authentication.iam.domain.exceptions.InvalidPasswordException;
-import com.example.authentication.iam.domain.exceptions.RoleNotFoundException;
-import com.example.authentication.iam.domain.exceptions.UserNotFoundException;
-import com.example.authentication.iam.domain.exceptions.UsernameAlreadyExistsException;
+import com.example.authentication.iam.domain.exceptions.*;
 import com.example.authentication.iam.domain.model.aggregates.User;
 import com.example.authentication.iam.domain.model.commands.SignInCommand;
 import com.example.authentication.iam.domain.model.commands.SignUpCommand;
@@ -43,6 +40,10 @@ public class UserCommandServiceImpl implements UserCommandService {
 
     if (!hashingService.matches(command.password(), user.getHashedPassword())) {
       throw new InvalidPasswordException();
+    }
+
+    if (!user.isActive()) {
+      throw new UserNotActiveException(user.getUsername());
     }
 
     var token = tokenService.generateToken(user.getUsername());

@@ -11,6 +11,6 @@ public class UserResourceFromEntityAssembler {
         .map(Role::getStringRole)
         .toList();
 
-    return new UserResource(user.getId(), user.getUsername(), roles);
+    return new UserResource(user.getId(), user.getUsername(), roles, user.isActive());
   }
 }

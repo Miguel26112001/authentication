@@ -25,6 +25,9 @@ public class User extends AuditableAbstractAggregateRoot<User> {
   @Size(max = 100)
   private String hashedPassword;
 
+  @Column(nullable = false)
+  private boolean isActive;
+
   @ManyToMany(
       fetch = FetchType.EAGER,
       cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
@@ -36,12 +39,14 @@ public class User extends AuditableAbstractAggregateRoot<User> {
 
   public User() {
     this.roles = new HashSet<>();
+    this.isActive = true;
   }
 
   public User(String username, String hashedPassword) {
     this.username = username;
     this.hashedPassword = hashedPassword;
     this.roles = new HashSet<>();
+    this.isActive = true;
   }
 
   public User(String username, String hashedPassword, List<Role> roles) {

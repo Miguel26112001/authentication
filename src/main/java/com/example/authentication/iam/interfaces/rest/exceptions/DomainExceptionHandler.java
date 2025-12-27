@@ -1,9 +1,6 @@
 package com.example.authentication.iam.interfaces.rest.exceptions;
 
-import com.example.authentication.iam.domain.exceptions.InvalidPasswordException;
-import com.example.authentication.iam.domain.exceptions.RoleNotFoundException;
-import com.example.authentication.iam.domain.exceptions.UserNotFoundException;
-import com.example.authentication.iam.domain.exceptions.UsernameAlreadyExistsException;
+import com.example.authentication.iam.domain.exceptions.*;
 import com.example.authentication.shared.interfaces.rest.resources.MessageResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +34,13 @@ public class DomainExceptionHandler {
     public ResponseEntity<MessageResource> handleInvalidPasswordException(InvalidPasswordException e) {
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
+            .body(new MessageResource(e.getMessage()));
+    }
+
+    @ExceptionHandler(UserNotActiveException.class)
+    public ResponseEntity<MessageResource> handleUserNotActiveException(UserNotActiveException e) {
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
             .body(new MessageResource(e.getMessage()));
     }
 }

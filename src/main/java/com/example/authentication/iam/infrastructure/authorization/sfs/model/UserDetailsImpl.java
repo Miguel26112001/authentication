@@ -23,7 +23,7 @@ public class UserDetailsImpl implements UserDetails {
   private final boolean enabled;
   private final Collection<? extends GrantedAuthority> authorities;
 
-  public UserDetailsImpl(String username, String password,
+  public UserDetailsImpl(String username, String password, boolean enabled,
                          Collection<? extends GrantedAuthority> authorities) {
     this.username = username;
     this.password = password;
@@ -31,7 +31,7 @@ public class UserDetailsImpl implements UserDetails {
     this.accountNonExpired = true;
     this.accountNonLocked = true;
     this.credentialsNonExpired = true;
-    this.enabled = true;
+    this.enabled = enabled;
   }
 
   public static UserDetailsImpl build(User user) {
@@ -40,6 +40,6 @@ public class UserDetailsImpl implements UserDetails {
         .map(SimpleGrantedAuthority::new)
         .collect(Collectors.toList());
 
-    return new UserDetailsImpl(user.getUsername(), user.getHashedPassword(), authorities);
+    return new UserDetailsImpl(user.getUsername(), user.getHashedPassword(), user.isActive(), authorities);
   }
 }
