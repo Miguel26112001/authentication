@@ -5,7 +5,9 @@ import com.example.authentication.iam.domain.model.queries.GetAllUsersQuery;
 import com.example.authentication.iam.domain.model.queries.GetUserByIdQuery;
 import com.example.authentication.iam.domain.services.UserCommandService;
 import com.example.authentication.iam.domain.services.UserQueryService;
+import com.example.authentication.iam.interfaces.rest.resources.UpdatePasswordResource;
 import com.example.authentication.iam.interfaces.rest.resources.UserResource;
+import com.example.authentication.iam.interfaces.rest.transform.UpdatePasswordCommandFromResourceAssembler;
 import com.example.authentication.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
 import com.example.authentication.shared.interfaces.rest.resources.MessageResource;
 import io.swagger.v3.oas.annotations.Operation;
@@ -86,6 +88,29 @@ public class UsersController {
   public ResponseEntity<UserResource> updateUserStatus(@PathVariable Long userId, @RequestParam boolean isActive) {
     var updateUserStatusCommand = new UpdateUserStatusCommand(userId, isActive);
     var updatedUser = userCommandService.handle(updateUserStatusCommand);
+    if (updatedUser.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
+    var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(updatedUser.get());
+    return ResponseEntity.ok(userResource);
+  }
+
+  @PatchMapping(value = "/{userId}/password")
+  @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+  @Operation(summary = "Update user password", description = "Update the password of a specific user.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "User password updated",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResource.class))),
+      @ApiResponse(responseCode = "400", description = "Weak password or invalid request",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResource.class))),
+      @ApiResponse(responseCode = "401", description = "Unauthorized",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResource.class))),
+      @ApiResponse(responseCode = "404", description = "User not found",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResource.class)))
+  })
+  public ResponseEntity<UserResource> updateUserPassword(@PathVariable Long userId, @RequestBody UpdatePasswordResource resource) {
+    var updatePasswordCommand = UpdatePasswordCommandFromResourceAssembler.toCommandFromResource(userId, resource);
+    var updatedUser = userCommandService.handle(updatePasswordCommand);
     if (updatedUser.isEmpty()) {
       return ResponseEntity.notFound().build();
     }

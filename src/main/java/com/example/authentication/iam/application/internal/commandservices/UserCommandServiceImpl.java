@@ -7,6 +7,7 @@ import com.example.authentication.iam.domain.exceptions.*;
 import com.example.authentication.iam.domain.model.aggregates.User;
 import com.example.authentication.iam.domain.model.commands.SignInCommand;
 import com.example.authentication.iam.domain.model.commands.SignUpCommand;
+import com.example.authentication.iam.domain.model.commands.UpdatePasswordCommand;
 import com.example.authentication.iam.domain.model.commands.UpdateUserStatusCommand;
 import com.example.authentication.iam.domain.services.UserCommandService;
 import com.example.authentication.iam.infrastructure.persistence.jpa.repositories.RoleRepository;
@@ -76,6 +77,21 @@ public class UserCommandServiceImpl implements UserCommandService {
     var user = userRepository.findById(command.userId())
         .orElseThrow(() -> new UserNotFoundException(command.userId().toString()));
     user.setActive(command.isActive());
+    userRepository.save(user);
+    return Optional.of(user);
+  }
+
+  @Override
+  public Optional<User> handle(UpdatePasswordCommand command) {
+    var user = userRepository.findById(command.userId())
+        .orElseThrow(() -> new UserNotFoundException(command.userId().toString()));
+
+    if (!hashingService.matches(command.currentPassword(), user.getHashedPassword())) {
+      throw new DifferentPasswordException();
+    }
+
+    PasswordValidator.validate(command.newPassword());
+    user.setHashedPassword(hashingService.encode(command.newPassword()));
     userRepository.save(user);
     return Optional.of(user);
   }
